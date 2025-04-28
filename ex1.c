@@ -10,14 +10,14 @@ struct celula{
 };
 
 
-// int comparar(struct celula *cabeca);
-// void insere_ordem(char nome[100], int ano_ordem, int id, struct celula *cabeca);
-// void ler_string(char nome[100], int tamanho);
-// void imprime(struct celula * cabeca);
-// int menu();
-// void remover(int id, struct celula *cabeca);
-// void grava_arquivo (struct celula * cabeca);
-// void le_arquivo (struct celula * cabeca);
+int comparar(struct celula *cabeca);
+void insere_ordem(char nome[100], int ano_ordem, int id, struct celula *cabeca);
+void ler_string(char nome[100], int tamanho);
+void imprime(struct celula * cabeca);
+int menu();
+void remover(int id, struct celula *cabeca);
+void grava_arquivo (struct celula * cabeca);
+void le_arquivo (struct celula * cabeca);
 
 
 
