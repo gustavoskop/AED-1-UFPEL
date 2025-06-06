@@ -9,7 +9,7 @@
 #define TAM_PESSOA (TAM_NOME + TAM_IDADE + TAM_EMAIL)
 #define MENU sizeof(int)
 
-void Adiciona();
+//void Adiciona(void *pBuffer, char* nome, int * idade, char* email, void * fim);
 void Busca();
 void Remove();
 void Lista();
@@ -31,10 +31,14 @@ int main()
     menu = (int *) pBuffer;
     *menu = 0;
 
-    nome = (pBuffer + MENU + 1);
+ 
+
+    nome = (pBuffer + MENU);
     idade = (pBuffer + MENU + TAM_NOME);
     email = (pBuffer + MENU + TAM_NOME + TAM_IDADE);
     fim = (pBuffer + MENU + TAM_PESSOA);
+
+       printf("%lld", fim - pBuffer);
 
     while (*menu != 5){
         printf("Escolha uma opcao: \n \
@@ -47,23 +51,24 @@ int main()
 
         switch (*menu){
             case 1:
-            Adiciona();
+           // Adiciona(pBuffer, nome, idade, email, fim);
             break;
 
             case 2:
-            Remove();
+           // Remove();
             break;
 
             case 3:
-            Busca();
+           // Busca();
             break;
 
             case 4:
-            Lista();
+            //Lista();
             break;
 
             case 5:
             free(pBuffer);
+            pBuffer = NULL;
             break;
 
             default:
@@ -74,24 +79,31 @@ int main()
 
 }
 
-void Adiciona(){
+void Adiciona(void* pBuffer, char* nome, int* idade, char* email, void* fim){
 
 
     printf("\n\tEscreva o nome: ");
     fgets(nome, TAM_NOME, stdin);
+    nome [strcspn(nome, "\n")] = '\0';
+
     printf("\n\tEscreva a idade: ");
     fgets(idade, TAM_IDADE, stdin);
+    idade []
+
     printf("\n\tEscreva o email: ");
     fgets(email, TAM_EMAIL, stdin);
-
-    realloc(pBuffer, fim + strlen(nome) + sizeof(int) + strlen(email));
-
-    
+    email [strcspn(email, "\n")] = '\0';
 
 
 
+    pBuffer = realloc(pBuffer, ((fim - pBuffer) + sizeof(char) * strlen(nome) + sizeof(int) + sizeof(char) * strlen(email)));
 
-
+    sscanf(nome, "%s", fim);
+    fim = fim + sizeof(char) * strlen(nome);
+    sscanf(idade, "%d", fim);
+    fim = fim + sizeof(int);
+    sscanf(email, "%s", fim);
+    fim = fim + sizeof(char) * strlen(email);
 
     fim = fim + strlen(nome) + sizeof(int) + strlen(email);
 
