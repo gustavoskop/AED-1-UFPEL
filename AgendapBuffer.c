@@ -9,7 +9,7 @@
 #define TAM_PESSOA (TAM_NOME + TAM_IDADE + TAM_EMAIL)
 #define MENU sizeof(int)
 
-//void Adiciona(void *pBuffer, char* nome, int * idade, char* email, void * fim);
+void Adiciona(void *pBuffer, char* nome, char * idade, char* email, void * fim);
 void Busca();
 void Remove();
 void Lista();
@@ -23,8 +23,8 @@ int main()
         printf("memoria nao alocada");
 
 
-    int *menu = NULL, *idade = NULL;
-    char *nome = NULL, *email = NULL;
+    int *menu = NULL;
+    char *nome = NULL, *email = NULL, *idade = NULL;
     void *fim = NULL, *temp = NULL;
 
 
@@ -48,10 +48,11 @@ int main()
         4. Listar\n \
         5. Sair\n");
         scanf("%d", menu);
+        getchar();
 
         switch (*menu){
             case 1:
-           // Adiciona(pBuffer, nome, idade, email, fim);
+            Adiciona(pBuffer, nome, idade, email, fim);
             break;
 
             case 2:
@@ -67,8 +68,6 @@ int main()
             break;
 
             case 5:
-            free(pBuffer);
-            pBuffer = NULL;
             break;
 
             default:
@@ -76,10 +75,12 @@ int main()
             break;
         }
     }
+        free(pBuffer);
+        pBuffer = NULL;
 
 }
 
-void Adiciona(void* pBuffer, char* nome, int* idade, char* email, void* fim){
+void Adiciona(void* pBuffer, char* nome, char* idade, char* email, void* fim){
 
 
     printf("\n\tEscreva o nome: ");
@@ -88,7 +89,7 @@ void Adiciona(void* pBuffer, char* nome, int* idade, char* email, void* fim){
 
     printf("\n\tEscreva a idade: ");
     fgets(idade, TAM_IDADE, stdin);
-    idade []
+    idade [strcspn(idade, "\n")] = '\0';
 
     printf("\n\tEscreva o email: ");
     fgets(email, TAM_EMAIL, stdin);
@@ -96,7 +97,7 @@ void Adiciona(void* pBuffer, char* nome, int* idade, char* email, void* fim){
 
 
 
-    pBuffer = realloc(pBuffer, ((fim - pBuffer) + sizeof(char) * strlen(nome) + sizeof(int) + sizeof(char) * strlen(email)));
+    pBuffer = realloc(pBuffer, (((long long int)(fim - pBuffer)) + (sizeof(char) * strlen(nome) + sizeof(int) + sizeof(char) * strlen(email))));
 
     sscanf(nome, "%s", fim);
     fim = fim + sizeof(char) * strlen(nome);
