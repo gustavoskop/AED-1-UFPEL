@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define TAM_NOME sizeof(char) * 100
+#define TAM_IDADE sizeof(int) 
+#define TAM_EMAIL sizeof(char) * 100
+#define TAM_PESSOA (TAM_NOME + TAM_IDADE + TAM_EMAIL)
+#define MENU sizeof(int)
+
+void Adiciona();
+void Busca();
+void Remove();
+void Lista();
+
+
+int main()
+{
+    void *pBuffer;
+    pBuffer = malloc(sizeof(int) + TAM_PESSOA); // menu + variaveis iniciais
+    if(pBuffer == NULL)
+        printf("memoria nao alocada");
+
+
+    int *menu = NULL, *idade = NULL;
+    char *nome = NULL, *email = NULL;
+    void *fim = NULL, *temp = NULL;
+
+
+    menu = (int *) pBuffer;
+    *menu = 0;
+
+    nome = (pBuffer + MENU + 1);
+    idade = (pBuffer + MENU + TAM_NOME);
+    email = (pBuffer + MENU + TAM_NOME + TAM_IDADE);
+    fim = (pBuffer + MENU + TAM_PESSOA);
+
+    while (*menu != 5){
+        printf("Escolha uma opcao: \n \
+        1. Adicionar uma pessoa \n \
+        2. Remover uma pessoa \n \
+        3. Buscar um nome \n \
+        4. Listar\n \
+        5. Sair\n");
+        scanf("%d", menu);
+
+        switch (*menu){
+            case 1:
+            Adiciona();
+            break;
+
+            case 2:
+            Remove();
+            break;
+
+            case 3:
+            Busca();
+            break;
+
+            case 4:
+            Lista();
+            break;
+
+            case 5:
+            free(pBuffer);
+            break;
+
+            default:
+            printf("Por favor, digite um numero valido.");
+            break;
+        }
+    }
+
+}
+
+void Adiciona(){
+
+
+    printf("\n\tEscreva o nome: ");
+    fgets(nome, TAM_NOME, stdin);
+    printf("\n\tEscreva a idade: ");
+    fgets(idade, TAM_IDADE, stdin);
+    printf("\n\tEscreva o email: ");
+    fgets(email, TAM_EMAIL, stdin);
+
+    realloc(pBuffer, fim + strlen(nome) + sizeof(int) + strlen(email));
+
+    
+
+
+
+
+
+
+    fim = fim + strlen(nome) + sizeof(int) + strlen(email);
+
+
+
+
+
+}
