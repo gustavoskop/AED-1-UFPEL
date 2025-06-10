@@ -11,21 +11,22 @@
 #define MENU sizeof(int) + sizeof(long long int)
 
 void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void **temp);
+void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, long long int **qtdAlocada);
+bool Busca(void *pBuffer, char *nome, void **temp, void *fim);
+void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, void *temp, void **fim);
+void Lista(void *pBuffer, void **temp, void *fim);
+
+void ProxCampo(void **temp);
+void ProxPessoa(void **temp);
+
+void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **temp, void *fim);
+void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **temp, void *fim);
+void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **temp, void *fim);
 
 void MenuSemOrdenar(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
 void MenuNome(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
 void MenuIdade(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
 void MenuEmail(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
-
-void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, long long int **qtdAlocada);
-bool Busca(void *pBuffer, char *nome, void **temp, void *fim);
-void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, void *temp, void **fim);
-void Lista(void *pBuffer, void **temp, void *fim);
-void ProxCampo(void **temp);
-void ProxPessoa(void **temp);
-void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **temp, void *fim);
-void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **temp, void *fim);
-void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **temp, void *fim);
 
 int main()
 {
