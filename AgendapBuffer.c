@@ -13,7 +13,7 @@
 void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void **temp);
 void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, long long int **qtdAlocada);
 bool Busca(void *pBuffer, char *nome, void **temp, void *fim);
-void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, void *temp, void **fim);
+void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, long long int **qtdAlocada, void *temp, void **fim);
 void Lista(void *pBuffer, void **temp, void *fim);
 
 void ProxCampo(void **temp);
@@ -30,8 +30,9 @@ void MenuEmail(void **pBuffer, int **menu, long long int **qtdAlocada, char **no
 
 int main()
 {
-comeco:
     void *pBuffer;
+comeco:
+    
     pBuffer = malloc(MENU + TAM_PESSOA); // menu + variaveis iniciais
     if (pBuffer == NULL)
     {
@@ -134,7 +135,7 @@ void MenuSemOrdenar(void **pBuffer, int **menu, long long int **qtdAlocada, char
             printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, temp, fim);
+            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
             break;
 
         case 3:
@@ -187,10 +188,10 @@ void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, cha
     if (tempAdiciona != *pBuffer)
     {
         *menu = (int *)*pBuffer;
-        *qtdAlocada = sizeof(int) + (long long int *)*pBuffer;
-        *nome = (*pBuffer + MENU);
-        *idade = (*pBuffer + MENU + TAM_NOME);
-        *email = (*pBuffer + MENU + TAM_NOME + TAM_IDADE);
+        *qtdAlocada = (long long int *)((char *)pBuffer + sizeof(int));
+        *nome = ((char *)*pBuffer + MENU);
+        *idade = ((char *)*pBuffer + MENU + TAM_NOME);
+        *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
         *fim = (char *)(*pBuffer) + (long long int)(((char *)*fim - (char *)tempAdiciona));
         *temp = (char *)(*pBuffer) + (long long int)(((char *)tempTemp) - (char *)tempAdiciona);
     }
@@ -264,7 +265,7 @@ void Lista(void *pBuffer, void **temp, void *fim)
     printf("\n");
 }
 
-void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, void *temp, void **fim)
+void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, long long int **qtdAlocada, void *temp, void **fim)
 {
     void *tempRemove = NULL;
     void *tempRealloc = *pBuffer;
@@ -284,11 +285,12 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
 
         if (tempRealloc != *pBuffer)
         {
-            *menu = (int *)(*pBuffer);
-            *nome = (*pBuffer + MENU);
-            *idade = (*pBuffer + MENU + TAM_NOME);
-            *email = (*pBuffer + MENU + TAM_NOME + TAM_IDADE);
-            *fim = (char *)*pBuffer + (long long int)((char *)*fim - (char *)tempRealloc) - (long long int)((char *)temp - (char *)tempRemove);
+        *menu = (int *)*pBuffer;
+        *qtdAlocada = (long long int *)((char *)pBuffer + sizeof(int));
+        *nome = ((char *)*pBuffer + MENU);
+        *idade = ((char *)*pBuffer + MENU + TAM_NOME);
+        *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
+        *fim = (char *)*pBuffer + (long long int)((char *)*fim - (char *)tempRealloc) - (long long int)((char *)temp - (char *)tempRemove);
         }
         else
         {
@@ -395,7 +397,7 @@ void MenuNome(void **pBuffer, int **menu, long long int **qtdAlocada, char **nom
             printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, temp, fim);
+            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
             break;
 
         case 3:
@@ -464,7 +466,7 @@ void MenuIdade(void **pBuffer, int **menu, long long int **qtdAlocada, char **no
             printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, temp, fim);
+            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
             break;
 
         case 3:
@@ -533,7 +535,7 @@ void MenuEmail(void **pBuffer, int **menu, long long int **qtdAlocada, char **no
             printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, temp, fim);
+            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
             break;
 
         case 3:
