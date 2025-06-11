@@ -23,16 +23,15 @@ void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **te
 void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **temp, void *fim);
 void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **temp, void *fim);
 
-void MenuSemOrdenar(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
-void MenuNome(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
-void MenuIdade(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
-void MenuEmail(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp);
+void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp,
+          void (*ordenar)(void *, long long int **, char *, void **, void *),
+          char *campoOrdenacao);
 
 int main()
 {
     void *pBuffer;
 comeco:
-    
+
     pBuffer = malloc(MENU + TAM_PESSOA); // menu + variaveis iniciais
     if (pBuffer == NULL)
     {
@@ -61,16 +60,16 @@ comeco:
         switch (*menu)
         {
         case 1:
-            MenuSemOrdenar(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp);
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, NULL, NULL);
             break;
         case 2:
-            MenuNome(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp);
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaNome, nome);
             break;
         case 3:
-            MenuIdade(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp);
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaIdade, idade);
             break;
         case 4:
-            MenuEmail(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp);
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaEmail, email);
             break;
         case 5:
             break;
@@ -102,7 +101,9 @@ comeco:
     return 0;
 }
 
-void MenuSemOrdenar(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp)
+void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp,
+          void (*ordenar)(void *, long long int **, char *, void **, void *),
+          char *campoOrdenacao)
 {
 
     while (**menu != 5)
@@ -126,8 +127,13 @@ void MenuSemOrdenar(void **pBuffer, int **menu, long long int **qtdAlocada, char
             fgets(*email, TAM_EMAIL, stdin);
             (*email)[strcspn(*email, "\n")] = '\0';
 
-            temp = *fim;
             ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim, &temp);
+            if (ordenar != NULL)
+            {
+                ordenar(*pBuffer, qtdAlocada, campoOrdenacao, &temp, *fim);
+            }
+            else
+                temp = *fim;
             Adiciona(nome, idade, email, fim, temp, qtdAlocada);
             break;
 
@@ -188,7 +194,7 @@ void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, cha
     if (tempAdiciona != *pBuffer)
     {
         *menu = (int *)*pBuffer;
-        *qtdAlocada = (long long int *)((char *)pBuffer + sizeof(int));
+        *qtdAlocada = (long long int *)((char *)*pBuffer + sizeof(int));
         *nome = ((char *)*pBuffer + MENU);
         *idade = ((char *)*pBuffer + MENU + TAM_NOME);
         *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
@@ -285,12 +291,12 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
 
         if (tempRealloc != *pBuffer)
         {
-        *menu = (int *)*pBuffer;
-        *qtdAlocada = (long long int *)((char *)pBuffer + sizeof(int));
-        *nome = ((char *)*pBuffer + MENU);
-        *idade = ((char *)*pBuffer + MENU + TAM_NOME);
-        *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
-        *fim = (char *)*pBuffer + (long long int)((char *)*fim - (char *)tempRealloc) - (long long int)((char *)temp - (char *)tempRemove);
+            *menu = (int *)*pBuffer;
+            *qtdAlocada = (long long int *)((char *)*pBuffer + sizeof(int));
+            *nome = ((char *)*pBuffer + MENU);
+            *idade = ((char *)*pBuffer + MENU + TAM_NOME);
+            *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
+            *fim = (char *)*pBuffer + (long long int)((char *)*fim - (char *)tempRealloc) - (long long int)((char *)temp - (char *)tempRemove);
         }
         else
         {
@@ -362,212 +368,4 @@ void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **
     else
         memmove((char *)(*temp) + **qtdAlocada, *temp, (long long int)((char *)(fim) - (char *)(*temp)));
     tempEmail = NULL;
-}
-
-void MenuNome(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp)
-{
-
-    while (**menu != 5)
-    {
-        printf("\n\n1. Adicionar uma pessoa\n2. Remover uma pessoa\n3. Buscar um nome\n4. Listar\n5. Sair\n6. Escolher outra agenda\n  \nEscolha uma opcao: ");
-        scanf("%d", *menu);
-        getchar();
-
-        switch (**menu)
-        {
-        case 1:
-            printf("\nEscreva o nome: ");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            printf("Escreva a idade: ");
-            fgets(*idade, TAM_IDADE, stdin);
-            (*idade)[strcspn(*idade, "\n")] = '\0';
-
-            printf("Escreva o email: ");
-            fgets(*email, TAM_EMAIL, stdin);
-            (*email)[strcspn(*email, "\n")] = '\0';
-
-            ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim, &temp);
-            OrdenaNome(*pBuffer, qtdAlocada, *nome, &temp, *fim);
-            Adiciona(nome, idade, email, fim, temp, qtdAlocada);
-            break;
-
-        case 2:
-            printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
-            break;
-
-        case 3:
-            printf("\nDigite o nome a ser encontrado: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            if (Busca(*pBuffer, *nome, &temp, *fim))
-            {
-                printf("\n--------------------------");
-                printf("\n\tNome: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tIdade: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tE-mail: %s\n", (char *)temp);
-                printf("--------------------------\n");
-            }
-            break;
-
-        case 4:
-            Lista(*pBuffer, &temp, *fim);
-            break;
-
-        case 5:
-            return;
-
-        case 6:
-            return;
-
-        default:
-            printf("Por favor, digite um numero valido.");
-            break;
-        }
-    }
-}
-
-void MenuIdade(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp)
-{
-    while (**menu != 5)
-    {
-        printf("\n\n1. Adicionar uma pessoa\n2. Remover uma pessoa\n3. Buscar um nome\n4. Listar\n5. Sair\n6. Escolher outra agenda\n  \nEscolha uma opcao: ");
-        scanf("%d", *menu);
-        getchar();
-
-        switch (**menu)
-        {
-        case 1:
-            printf("\nEscreva o nome: ");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            printf("Escreva a idade: ");
-            fgets(*idade, TAM_IDADE, stdin);
-            (*idade)[strcspn(*idade, "\n")] = '\0';
-
-            printf("Escreva o email: ");
-            fgets(*email, TAM_EMAIL, stdin);
-            (*email)[strcspn(*email, "\n")] = '\0';
-
-            ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim, &temp);
-            OrdenaIdade(*pBuffer, qtdAlocada, *idade, &temp, *fim);
-            Adiciona(nome, idade, email, fim, temp, qtdAlocada);
-            break;
-
-        case 2:
-            printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
-            break;
-
-        case 3:
-            printf("\nDigite o nome a ser encontrado: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            if (Busca(*pBuffer, *nome, &temp, *fim))
-            {
-                printf("\n--------------------------");
-                printf("\n\tNome: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tIdade: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tE-mail: %s\n", (char *)temp);
-                printf("--------------------------\n");
-            }
-            break;
-
-        case 4:
-            Lista(*pBuffer, &temp, *fim);
-            break;
-
-        case 5:
-            return;
-
-        case 6:
-            return;
-
-        default:
-            printf("Por favor, digite um numero valido.");
-            break;
-        }
-    }
-}
-
-void MenuEmail(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp)
-{
-    while (**menu != 5)
-    {
-        printf("\n\n1. Adicionar uma pessoa\n2. Remover uma pessoa\n3. Buscar um nome\n4. Listar\n5. Sair\n6. Escolher outra agenda\n  \nEscolha uma opcao: ");
-        scanf("%d", *menu);
-        getchar();
-
-        switch (**menu)
-        {
-        case 1:
-            printf("\nEscreva o nome: ");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            printf("Escreva a idade: ");
-            fgets(*idade, TAM_IDADE, stdin);
-            (*idade)[strcspn(*idade, "\n")] = '\0';
-
-            printf("Escreva o email: ");
-            fgets(*email, TAM_EMAIL, stdin);
-            (*email)[strcspn(*email, "\n")] = '\0';
-
-            ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim, &temp);
-            OrdenaEmail(*pBuffer, qtdAlocada, *email, &temp, *fim);
-            Adiciona(nome, idade, email, fim, temp, qtdAlocada);
-            break;
-
-        case 2:
-            printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-            Remove(pBuffer, nome, idade, email, menu, qtdAlocada, temp, fim);
-            break;
-
-        case 3:
-            printf("\nDigite o nome a ser encontrado: (Maiusculas importam!)\n");
-            fgets(*nome, TAM_NOME, stdin);
-            (*nome)[strcspn(*nome, "\n")] = '\0';
-
-            if (Busca(*pBuffer, *nome, &temp, *fim))
-            {
-                printf("\n--------------------------");
-                printf("\n\tNome: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tIdade: %s", (char *)temp);
-                ProxCampo(&temp);
-                printf("\n\tE-mail: %s\n", (char *)temp);
-                printf("--------------------------\n");
-            }
-            break;
-
-        case 4:
-            Lista(*pBuffer, &temp, *fim);
-            break;
-
-        case 5:
-            return;
-
-        case 6:
-            return;
-
-        default:
-            printf("Por favor, digite um numero valido.");
-            break;
-        }
-    }
 }
