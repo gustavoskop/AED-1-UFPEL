@@ -24,13 +24,13 @@ void ProxCampo(void **temp);
 void ProxPessoa(void **temp);
 
 //funções de ordenação
-void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **temp, void *fim);
-void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **temp, void *fim);
-void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **temp, void *fim);
+void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **temp, void *fim);
+void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim);
+void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim);
 
 //menu
 void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp,
-          void (*ordenar)(void *, long long int **, char *, void **, void *),
+          void (*ordenar)(void *, long long int **, char **, void **, void *),
           char *campoOrdenacao);
 
 int main()
@@ -114,7 +114,7 @@ comeco:
 
 //menu principal
 void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp, //passando o endereço das variáveis
-          void (*ordenar)(void *, long long int **, char *, void **, void *),//para escolher qual o método de ordenação desejado
+          void (*ordenar)(void *, long long int **, char **, void **, void *),//para escolher qual o método de ordenação desejado
           char *campoOrdenacao)
 {
 
@@ -142,7 +142,7 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
             ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim); //realloca com o tamanho necessário
             if (ordenar != NULL) //se for null, é porque o usuário não quer ordenação
             {
-                ordenar(*pBuffer, qtdAlocada, campoOrdenacao, &temp, *fim); //define qual o método de ordenação
+                ordenar(*pBuffer, qtdAlocada, &campoOrdenacao, &temp, *fim); //define qual o método de ordenação
             }
             else
                 temp = *fim;
@@ -338,14 +338,14 @@ void ProxPessoa(void **temp) //percorre 3 campos e faz temp apontar para a próx
    | Além disso, se o email contiver números, a ordenação por email não funciona corretamente                             |
    ======================================================================================================================== */
 
-void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **temp, void *fim)
+void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **temp, void *fim)
 {
     //semelhante à função de busca, porém, quando encontra um local válido para inserir o nome,
     //move todas as pessoas da agenda para a direita, no tamanho exato da pessoa atual, para inserir a nova pessoa no local certo
     *temp = pBuffer + FIM;
     if (*temp == fim)
         return;
-    while (strcmp(nome, *temp) > 0 && *temp != fim)
+    while (strcmp(*nome, *temp) > 0 && *temp != fim)
         ProxPessoa(temp);
     if (*temp == fim)
         return;
@@ -356,7 +356,7 @@ void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char *nome, void **te
         memmove((char *)(*temp) + **qtdAlocada, *temp, (long long int)((char *)(fim) - (char *)(*temp)));
 }
 
-void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **temp, void *fim)
+void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim)
 {
     //semelhante ao OrdenaNome, mas percorre os campos de idade, e transforma o campo idade atual em um inteiro para fazer a comparação
     *temp = pBuffer + FIM;
@@ -365,7 +365,7 @@ void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **
     char *tempIdade = pBuffer + FIM;
     ProxCampo((void *)&tempIdade);//aponta para a idade da primeira pessoa inserida na lista
 
-    while (atoi(tempIdade) <= atoi(idade) && *temp != fim)//precisa transformar para inteiro pois 9 é maior que 10 na tabela ascii, se for comparar pelo strcmp
+    while (atoi(tempIdade) <= atoi(*idade) && *temp != fim)//precisa transformar para inteiro pois 9 é maior que 10 na tabela ascii, se for comparar pelo strcmp
     {
         ProxPessoa(temp);//temp sempre aponta para o nome da pessoa atual, para não ter erro na hora do memmove
         ProxPessoa((void *)(&tempIdade));//percorre os campos de idade
@@ -377,7 +377,7 @@ void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char *idade, void **
     tempIdade = NULL;
 }
 
-void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **temp, void *fim)
+void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim)
 {
     //mesma coisa que o OrdenaNome, mas percorrendo os campos do email
     *temp = pBuffer + FIM;
@@ -387,7 +387,7 @@ void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char *email, void **
     ProxCampo((void *)&tempEmail);
     ProxCampo((void *)&tempEmail); // aponta para o primeiro email inserido na lista
 
-    while (strcmp(email, *temp) > 0 && *temp != fim)
+    while (strcmp(*email, *temp) > 0 && *temp != fim)
     {
         ProxPessoa(temp);//aponta para o nome atual
         ProxPessoa((void *)(&tempEmail));//percorre os campos de email
