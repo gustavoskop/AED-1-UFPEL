@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 // tamanho das variáveis
+// tamanho das variáveis
 #define TAM_NOME sizeof(char) * 255
 #define TAM_IDADE sizeof(char) * 5
 #define TAM_EMAIL sizeof(char) * 255
@@ -14,11 +15,15 @@
 
 //funções principais
 void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim);
+
+//funções principais
+void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim);
 void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, long long int **qtdAlocada);
 bool Busca(void *pBuffer, char *nome, void **temp, void *fim);
 void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu, long long int **qtdAlocada, void *temp, void **fim);
 void Lista(void *pBuffer, void **temp, void *fim);
 
+//funções para pular campos
 //funções para pular campos
 void ProxCampo(void **temp);
 void ProxPessoa(void **temp);
@@ -27,9 +32,15 @@ void ProxPessoa(void **temp);
 void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **temp, void *fim);
 void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim);
 void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim);
+//funções de ordenação
+void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **temp, void *fim);
+void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim);
+void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim);
 
 //menu
+//menu
 void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp,
+          void (*ordenar)(void *, long long int **, char **, void **, void *),
           void (*ordenar)(void *, long long int **, char **, void **, void *),
           char *campoOrdenacao);
 
@@ -39,6 +50,7 @@ int main()
 comeco:
 
     pBuffer = malloc(MENU + TAM_PESSOA); // menu + qtdAlocada
+    pBuffer = malloc(MENU + TAM_PESSOA); // menu + qtdAlocada
     if (pBuffer == NULL)
     {
         printf("Erro ao alocar memoria");
@@ -46,11 +58,15 @@ comeco:
     }
 
     //inicialização das variáveis
+    //inicialização das variáveis
     int *menu = NULL;
     char *nome = NULL, *email = NULL, *idade = NULL;
     void *fim = NULL, *temp = NULL; // fim = ponteiro que sempre aponta para o final do buffer, temp = ponteiro auxiliar para fazer o que precisar
     long long int *qtdAlocada = NULL; // quantidade adicionada depois do realloc
+    void *fim = NULL, *temp = NULL; // fim = ponteiro que sempre aponta para o final do buffer, temp = ponteiro auxiliar para fazer o que precisar
+    long long int *qtdAlocada = NULL; // quantidade adicionada depois do realloc
 
+    //onde vai ficar cada variável no buffer
     //onde vai ficar cada variável no buffer
     menu = (int *)pBuffer;
     *menu = 0;
@@ -61,6 +77,7 @@ comeco:
     fim = (pBuffer + FIM);
 
     //menu inicial, para escolher que tipo de ordenação vai querer utilizar na agenda
+    //menu inicial, para escolher que tipo de ordenação vai querer utilizar na agenda
     printf("\nQual agenda voce deseja escolher?\n\n1.Sem ordenacao\n2.Ordenado por nome\n3.Ordenado por idade\n4.Ordenado por e-mail\n5.Sair\n  Escolha uma opcao: ");
     scanf("%d", menu);
     getchar();
@@ -70,19 +87,25 @@ comeco:
         {
         case 1:
             Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, NULL, NULL); //sem ordenação
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, NULL, NULL); //sem ordenação
             break;
         case 2:
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaNome, nome); //em ordem alfabética pelo nome
             Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaNome, nome); //em ordem alfabética pelo nome
             break;
         case 3:
             Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaIdade, idade); //ordem crescen de idade 
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaIdade, idade); //ordem crescen de idade 
             break;
         case 4:
+            Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaEmail, email); //ordem alfabética pelo email
             Menu(&pBuffer, &menu, &qtdAlocada, &nome, &idade, &email, &fim, temp, OrdenaEmail, email); //ordem alfabética pelo email
             break;
         case 5:
             break;//fim do código
+            break;//fim do código
         case 6:
+        //caso o usuário deseje, enquanto ele estiver dentro da agenda ele pode mudar a forma de ordenação, reiniciando a agenda e voltando para o menu inicial
         //caso o usuário deseje, enquanto ele estiver dentro da agenda ele pode mudar a forma de ordenação, reiniciando a agenda e voltando para o menu inicial
             free(pBuffer);
             pBuffer = NULL;
@@ -94,11 +117,14 @@ comeco:
             temp = NULL;
             fim = NULL;
             goto comeco; // volta para a segunda linha do main
+            goto comeco; // volta para a segunda linha do main
         default:
+            printf("Por favor, digite um numero valido."); //controle de erro
             printf("Por favor, digite um numero valido."); //controle de erro
             break;
         }
 
+        //se o usuário digitar 5, encerra a execução
         //se o usuário digitar 5, encerra a execução
     free(pBuffer);
     pBuffer = NULL;
@@ -115,6 +141,9 @@ comeco:
 //menu principal
 void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp, //passando o endereço das variáveis
           void (*ordenar)(void *, long long int **, char **, void **, void *),//para escolher qual o método de ordenação desejado
+//menu principal
+void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim, void *temp, //passando o endereço das variáveis
+          void (*ordenar)(void *, long long int **, char **, void **, void *),//para escolher qual o método de ordenação desejado
           char *campoOrdenacao)
 {
 
@@ -127,21 +156,28 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
         switch (**menu)
         {
         case 1: //adicionar
+        case 1: //adicionar
             printf("\nEscreva o nome: ");
             fgets(*nome, TAM_NOME, stdin);
+            (*nome)[strcspn(*nome, "\n")] = '\0'; //pega o nome do input
             (*nome)[strcspn(*nome, "\n")] = '\0'; //pega o nome do input
 
             printf("Escreva a idade: ");
             fgets(*idade, TAM_IDADE, stdin);
             (*idade)[strcspn(*idade, "\n")] = '\0'; //pega a idade do input
+            (*idade)[strcspn(*idade, "\n")] = '\0'; //pega a idade do input
 
             printf("Escreva o email: ");
             fgets(*email, TAM_EMAIL, stdin);
             (*email)[strcspn(*email, "\n")] = '\0'; //pega o email do input
+            (*email)[strcspn(*email, "\n")] = '\0'; //pega o email do input
 
             ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim); //realloca com o tamanho necessário
             if (ordenar != NULL) //se for null, é porque o usuário não quer ordenação
+            ReallocAdiciona(pBuffer, menu, qtdAlocada, nome, idade, email, fim); //realloca com o tamanho necessário
+            if (ordenar != NULL) //se for null, é porque o usuário não quer ordenação
             {
+                ordenar(*pBuffer, qtdAlocada, &campoOrdenacao, &temp, *fim); //define qual o método de ordenação
                 ordenar(*pBuffer, qtdAlocada, &campoOrdenacao, &temp, *fim); //define qual o método de ordenação
             }
             else
@@ -150,6 +186,7 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
             break;
 
         case 2: //remover
+        case 2: //remover
             printf("\nDigite o nome a ser removido: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
@@ -157,10 +194,12 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
             break;
 
         case 3: //busca
+        case 3: //busca
             printf("\nDigite o nome a ser encontrado: (Maiusculas importam!)\n");
             fgets(*nome, TAM_NOME, stdin);
             (*nome)[strcspn(*nome, "\n")] = '\0';
 
+            if (Busca(*pBuffer, *nome, &temp, *fim)) //se busca retornar true, o nome foi achado e vai ser mostrado no terminal
             if (Busca(*pBuffer, *nome, &temp, *fim)) //se busca retornar true, o nome foi achado e vai ser mostrado no terminal
             {
                 printf("\n--------------------------");
@@ -174,16 +213,20 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
             break;
 
         case 4: //lista
+        case 4: //lista
             Lista(*pBuffer, &temp, *fim);
             break;
 
         case 5: //encerrar o código
+        case 5: //encerrar o código
             return;
 
+        case 6: //volta para o menu inicial, para selecionar outro método de ordenação
         case 6: //volta para o menu inicial, para selecionar outro método de ordenação
             return;
 
         default:
+            printf("Por favor, digite um numero valido."); //controle de erro
             printf("Por favor, digite um numero valido."); //controle de erro
             break;
         }
@@ -191,7 +234,12 @@ void Menu(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, c
 }
 
 void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim)
+void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, char **nome, char **idade, char **email, void **fim)
 {
+    void *tempEnder = *pBuffer; //armazena o enderço atual do buffer
+    **qtdAlocada = (sizeof(char) * strlen(*nome) + 1 + sizeof(char) * strlen(*idade) + 1 + sizeof(char) * strlen(*email) + 1); // pega o tamanho do nome, idade e email digitados para realocar apenas o tamanho necessário
+    *pBuffer = realloc(*pBuffer, (((long long int)((char *)*fim - (char *)*pBuffer)) + **qtdAlocada));//tamanho do buffer + nome + idade + email                          
+                                                //fim - pBuffer = tamanho total do pBuffer
     void *tempEnder = *pBuffer; //armazena o enderço atual do buffer
     **qtdAlocada = (sizeof(char) * strlen(*nome) + 1 + sizeof(char) * strlen(*idade) + 1 + sizeof(char) * strlen(*email) + 1); // pega o tamanho do nome, idade e email digitados para realocar apenas o tamanho necessário
     *pBuffer = realloc(*pBuffer, (((long long int)((char *)*fim - (char *)*pBuffer)) + **qtdAlocada));//tamanho do buffer + nome + idade + email                          
@@ -203,6 +251,7 @@ void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, cha
     }
 
     if (tempEnder != *pBuffer) //se o endereço do pBuffer mudou após o realloc, atualiza todos os ponteiros
+    if (tempEnder != *pBuffer) //se o endereço do pBuffer mudou após o realloc, atualiza todos os ponteiros
     {
         *menu = (int *)*pBuffer;
         *qtdAlocada = (long long int *)((char *)*pBuffer + sizeof(int));
@@ -211,7 +260,11 @@ void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, cha
         *email = ((char *)*pBuffer + MENU + TAM_NOME + TAM_IDADE);
         **qtdAlocada = (sizeof(char) * strlen(*nome) + 1 + sizeof(char) * strlen(*idade) + 1 + sizeof(char) * strlen(*email) + 1);
         *fim = (char *)(*pBuffer) + (long long int)(((char *)*fim - (char *)tempEnder));
+        **qtdAlocada = (sizeof(char) * strlen(*nome) + 1 + sizeof(char) * strlen(*idade) + 1 + sizeof(char) * strlen(*email) + 1);
+        *fim = (char *)(*pBuffer) + (long long int)(((char *)*fim - (char *)tempEnder));
     }
+
+    tempEnder = NULL;
 
     tempEnder = NULL;
 }
@@ -219,7 +272,10 @@ void ReallocAdiciona(void **pBuffer, int **menu, long long int **qtdAlocada, cha
 void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, long long int **qtdAlocada)
 {
     //copia o conteúdo do input para seu devido lugar no buffer
+    //copia o conteúdo do input para seu devido lugar no buffer
     strcpy((char *)temp, *nome);
+    temp = (char *)temp + strlen(*nome) + 1; //se for sem ordenação, temp é sempre = fim, 
+    strcpy((char *)temp, *idade);        //se for com ordenação, temp é quando a função de ordenação encontra um lugar válido
     temp = (char *)temp + strlen(*nome) + 1; //se for sem ordenação, temp é sempre = fim, 
     strcpy((char *)temp, *idade);        //se for com ordenação, temp é quando a função de ordenação encontra um lugar válido
     temp = (char *)temp + strlen(*idade) + 1;
@@ -231,13 +287,16 @@ void Adiciona(char **nome, char **idade, char **email, void **fim, void *temp, l
 void ProxCampo(void **temp)
 {
     //percorre o campo atual (nome, idade ou email) até encontrar o final, e retorna o próximo campo
+    //percorre o campo atual (nome, idade ou email) até encontrar o final, e retorna o próximo campo
     *temp = (char *)*temp + strlen((char *)*temp) + 1;
 }
 
 bool Busca(void *pBuffer, char *nome, void **temp, void *fim)
 {
     *temp = pBuffer + FIM; //temp = final do buffer inicial (antes do nome,idade e email do usuário)
+    *temp = pBuffer + FIM; //temp = final do buffer inicial (antes do nome,idade e email do usuário)
 
+    if (*temp == fim)
     if (*temp == fim)
     {
         printf("\n  Agenda vazia!\n");
@@ -246,11 +305,14 @@ bool Busca(void *pBuffer, char *nome, void **temp, void *fim)
     else
     {
         while (*temp != fim) //percorre toda agenda até o final
+        while (*temp != fim) //percorre toda agenda até o final
         {
+            if (strcmp(nome, (char *)*temp) == 0) //se nome atual for igual ao nome onde temp está apontando
             if (strcmp(nome, (char *)*temp) == 0) //se nome atual for igual ao nome onde temp está apontando
                 return true;
             else
             {
+                ProxPessoa(temp); // se não for igual, pula 3 campos até a próxima pessoa
                 ProxPessoa(temp); // se não for igual, pula 3 campos até a próxima pessoa
             }
         }
@@ -262,13 +324,16 @@ bool Busca(void *pBuffer, char *nome, void **temp, void *fim)
 void Lista(void *pBuffer, void **temp, void *fim)
 {
     *temp = pBuffer + FIM; //temp = final do buffer inicial
+    *temp = pBuffer + FIM; //temp = final do buffer inicial
 
+    if (*temp == fim)
     if (*temp == fim)
     {
         printf("\n  Agenda vazia!\n");
         return;
     }
     printf("\n--------------------------");
+    while (*temp != fim) //percorre toda agenda, imprimindo cada campo que o ponteiro temp passa
     while (*temp != fim) //percorre toda agenda, imprimindo cada campo que o ponteiro temp passa
     {
         printf("\n\tNome: %s", (char *)*temp);
@@ -290,10 +355,22 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
     {//procura o nome na agenda, se encontrado, tempRemove aponta para o nome a ser eliminado
         temp = tempRemove; 
         ProxPessoa(&temp); //temp agora aponta para o sucessor da pessoa quer quer se eliminar
+    void *tempRemove = NULL; //ponteiro temporário para encontrar o destino do memmove
+    void *tempRealloc = *pBuffer; //aponta para o pBuffer antes do realloc, caso o realloc mude o endereço de pBuffer
+    if (Busca(*pBuffer, *nome, &tempRemove, *fim)) 
+    {//procura o nome na agenda, se encontrado, tempRemove aponta para o nome a ser eliminado
+        temp = tempRemove; 
+        ProxPessoa(&temp); //temp agora aponta para o sucessor da pessoa quer quer se eliminar
 
         //pega todo o bloco de memória a partir de temp e arrasta esse bloco para a esquerda,
         // sobreescrevendo a pessoa quer quer eliminar
+        //pega todo o bloco de memória a partir de temp e arrasta esse bloco para a esquerda,
+        // sobreescrevendo a pessoa quer quer eliminar
         memmove(tempRemove, temp, (long long int)((char *)*fim - (char *)temp));
+
+        //realloca o tamanho do buffer, diminuindo exatamente o tamanho da pessoa eliminada
+        *pBuffer = realloc(*pBuffer, (long long int)((char *)((char *)*fim - (char *)*pBuffer) - //(fim - pBuffer) = tamanho atual do bloco
+                    (char *)(((char *)temp - (char *)tempRemove)))); //(temp - tempRemove) = tamanho da pessoa eliminada
 
         //realloca o tamanho do buffer, diminuindo exatamente o tamanho da pessoa eliminada
         *pBuffer = realloc(*pBuffer, (long long int)((char *)((char *)*fim - (char *)*pBuffer) - //(fim - pBuffer) = tamanho atual do bloco
@@ -306,6 +383,7 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
         }
 
         if (tempRealloc != *pBuffer)//se o pBuffer mudou de endereço, atualiza os ponteiros
+        if (tempRealloc != *pBuffer)//se o pBuffer mudou de endereço, atualiza os ponteiros
         {
             *menu = (int *)*pBuffer;
             *qtdAlocada = (long long int *)((char *)*pBuffer + sizeof(int));
@@ -317,6 +395,7 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
         else
         {
             *fim = (char *)*fim - (long long int)((char *)temp - (char *)tempRemove); //se não mudou de endereço, muda apenas o ponteiro fim
+            *fim = (char *)*fim - (long long int)((char *)temp - (char *)tempRemove); //se não mudou de endereço, muda apenas o ponteiro fim
         }
 
         printf("\n  Nome Removido!\n");
@@ -325,6 +404,7 @@ void Remove(void **pBuffer, char **nome, char **idade, char **email, int **menu,
     tempRealloc = NULL;
 }
 
+void ProxPessoa(void **temp) //percorre 3 campos e faz temp apontar para a próxima pessoa
 void ProxPessoa(void **temp) //percorre 3 campos e faz temp apontar para a próxima pessoa
 {
     ProxCampo(temp);
@@ -342,10 +422,13 @@ void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **t
 {
     //semelhante à função de busca, porém, quando encontra um local válido para inserir o nome,
     //move todas as pessoas da agenda para a direita, no tamanho exato da pessoa atual, para inserir a nova pessoa no local certo
+    //semelhante à função de busca, porém, quando encontra um local válido para inserir o nome,
+    //move todas as pessoas da agenda para a direita, no tamanho exato da pessoa atual, para inserir a nova pessoa no local certo
     *temp = pBuffer + FIM;
     *nome = pBuffer + MENU;
     if (*temp == fim)
         return;
+    while (strcmp(*nome, *temp) > 0 && *temp != fim)
     while (strcmp(*nome, *temp) > 0 && *temp != fim)
         ProxPessoa(temp);
     if (*temp == fim)
@@ -354,11 +437,16 @@ void OrdenaNome(void *pBuffer, long long int **qtdAlocada, char **nome, void **t
         //temp + qtdAlocada = tamanho da pessoa atual
         //fim - temp = tamanho atual do bloco
         //pega todo o bloco de memória, do local válido até o final do bloco, e o move para a direita
+        //temp + qtdAlocada = tamanho da pessoa atual
+        //fim - temp = tamanho atual do bloco
+        //pega todo o bloco de memória, do local válido até o final do bloco, e o move para a direita
         memmove((char *)(*temp) + **qtdAlocada, *temp, (long long int)((char *)(fim) - (char *)(*temp)));
 }
 
 void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim)
+void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void **temp, void *fim)
 {
+    //semelhante ao OrdenaNome, mas percorre os campos de idade, e transforma o campo idade atual em um inteiro para fazer a comparação
     //semelhante ao OrdenaNome, mas percorre os campos de idade, e transforma o campo idade atual em um inteiro para fazer a comparação
     *temp = pBuffer + FIM;
     *idade = pBuffer + MENU + TAM_NOME;
@@ -366,9 +454,13 @@ void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void *
         return;
     char *tempIdade = pBuffer + FIM;
     ProxCampo((void *)&tempIdade);//aponta para a idade da primeira pessoa inserida na lista
+    ProxCampo((void *)&tempIdade);//aponta para a idade da primeira pessoa inserida na lista
 
     while (atoi(tempIdade) <= atoi(*idade) && *temp != fim)//precisa transformar para inteiro pois 9 é maior que 10 na tabela ascii, se for comparar pelo strcmp
+    while (atoi(tempIdade) <= atoi(*idade) && *temp != fim)//precisa transformar para inteiro pois 9 é maior que 10 na tabela ascii, se for comparar pelo strcmp
     {
+        ProxPessoa(temp);//temp sempre aponta para o nome da pessoa atual, para não ter erro na hora do memmove
+        ProxPessoa((void *)(&tempIdade));//percorre os campos de idade
         ProxPessoa(temp);//temp sempre aponta para o nome da pessoa atual, para não ter erro na hora do memmove
         ProxPessoa((void *)(&tempIdade));//percorre os campos de idade
     }
@@ -380,7 +472,9 @@ void OrdenaIdade(void *pBuffer, long long int **qtdAlocada, char **idade, void *
 }
 
 void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim)
+void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void **temp, void *fim)
 {
+    //mesma coisa que o OrdenaNome, mas percorrendo os campos do email
     //mesma coisa que o OrdenaNome, mas percorrendo os campos do email
     *temp = pBuffer + FIM;
     *email = pBuffer + MENU + TAM_NOME + TAM_IDADE;
@@ -389,9 +483,13 @@ void OrdenaEmail(void *pBuffer, long long int **qtdAlocada, char **email, void *
     char *tempEmail = pBuffer + FIM;
     ProxCampo((void *)&tempEmail);
     ProxCampo((void *)&tempEmail); // aponta para o primeiro email inserido na lista
+    ProxCampo((void *)&tempEmail); // aponta para o primeiro email inserido na lista
 
     while (strcmp(*email, *temp) > 0 && *temp != fim)
+    while (strcmp(*email, *temp) > 0 && *temp != fim)
     {
+        ProxPessoa(temp);//aponta para o nome atual
+        ProxPessoa((void *)(&tempEmail));//percorre os campos de email
         ProxPessoa(temp);//aponta para o nome atual
         ProxPessoa((void *)(&tempEmail));//percorre os campos de email
     }
