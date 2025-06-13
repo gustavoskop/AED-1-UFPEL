@@ -4,9 +4,9 @@
 #include <stdbool.h>
 
 // tamanho das variáveis
-#define TAM_NOME sizeof(char) * 255
+#define TAM_NOME sizeof(char) * 100
 #define TAM_IDADE sizeof(char) * 5
-#define TAM_EMAIL sizeof(char) * 255
+#define TAM_EMAIL sizeof(char) * 100
 #define TAM_PESSOA (TAM_NOME + TAM_IDADE + TAM_EMAIL)
 #define FIM (MENU + TAM_PESSOA)
 #define MENU sizeof(int) + sizeof(long long int)
@@ -55,10 +55,10 @@ comeco:
     menu = (int *)pBuffer;
     *menu = 0;
     qtdAlocada = sizeof(int) + (long long int *)pBuffer;
-    nome = (pBuffer + MENU);
-    idade = (pBuffer + MENU + TAM_NOME);
-    email = (pBuffer + MENU + TAM_NOME + TAM_IDADE);
-    fim = (pBuffer + FIM);
+    nome = ((char *)pBuffer + MENU);
+    idade = ((char *)pBuffer + MENU + TAM_NOME);
+    email = ((char *)pBuffer + MENU + TAM_NOME + TAM_IDADE);
+    fim = ((char *)pBuffer + FIM);
 
     //menu inicial, para escolher que tipo de ordenação vai querer utilizar na agenda
     printf("\nQual agenda voce deseja escolher?\n\n1.Sem ordenacao\n2.Ordenado por nome\n3.Ordenado por idade\n4.Ordenado por e-mail\n5.Sair\n  Escolha uma opcao: ");
